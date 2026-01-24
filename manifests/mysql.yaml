@@ -24,6 +24,8 @@ spec:
             secretKeyRef :
               name: app-secret
               key: DB_PASSWORD
+        - name: MYSQL_ALLOW_EMPTY_PASSWORD
+          value: yes
         volumeMounts:
         - name: mysql-storage
           mountPath: /var/lib/mysql

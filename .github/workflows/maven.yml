@@ -28,7 +28,7 @@ jobs:
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL'
-      - uses: philips-software/sonar-scanner-action@1.5.0
+      - uses: philips-software/sonar-scanner-action@v1.5.0
         with:
           token: ${{ secrets.SONARQUBE_TOKEN }}
           projectName: DevOps1stPortfolio

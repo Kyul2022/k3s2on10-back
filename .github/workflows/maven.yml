@@ -74,6 +74,7 @@ jobs:
       - name: Update CD repo with new image tag
         run: |
           git clone https://${{ secrets.PAT_TOKEN }}@github.com/Kyul2022/DevOpsPortfolio1st-k8sInfra.git
+          ls -l
           cd dev
           
           git config user.email "ulrichkamdem048@gmail.com"

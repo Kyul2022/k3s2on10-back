@@ -84,7 +84,7 @@ jobs:
           sed -i "s|image: .*devops-portfolio:.*|image: ${{ steps.meta.outputs.tags }}|g" backend.yaml
           
           git add backend.yaml
-          git commit -m "ci: update image tag to ${{ github.sha }}"
+          git commit -m "again ci: update image tag to ${{ github.sha }}"
           git push
 
 

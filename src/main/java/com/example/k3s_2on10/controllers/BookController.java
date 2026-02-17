@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.k3s_2on10.model.Book;
 import com.example.k3s_2on10.repositories.BookRepository;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 

@@ -41,11 +41,11 @@ jobs:
       - name: SonarQube Analysis
         env:
           SONAR_HOST_URL: http://20.223.137.252:9000/
+          SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
           SONAR_PROJECT_KEY: DevOps1stPortfolio
           SONAR_PROJECT_NAME: DevOps1stPortfolio
-        run: mvn sonar:sonar \
-          -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }}
-
+        run: mvn sonar:sonar
+        
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:

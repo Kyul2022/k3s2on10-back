@@ -18,10 +18,14 @@ public class BookController {
         this.bookRepository = bookRepository;
     }
 
-    @GetMapping
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+@GetMapping
+public ResponseEntity<?> getAllBooks() {
+    List<Book> books = bookRepository.findAll();
+    if(books.size() > 0) {
+        return ResponseEntity.ok(books);
     }
+    return ResponseEntity.status(404).body("No books found");
+}
 
     @PostMapping
     public Book createBook(@RequestBody Book book) {

@@ -39,6 +39,10 @@ jobs:
         run: mvn -B package --file pom.xml
 
       - name: SonarQube Analysis
+        env:
+          SONAR_HOST_URL: http://20.223.137.252:9000/
+          SONAR_PROJECT_KEY: DevOps1stPortfolio
+          SONAR_PROJECT_NAME: DevOps1stPortfolio
         run: mvn sonar:sonar \
           -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }}
 

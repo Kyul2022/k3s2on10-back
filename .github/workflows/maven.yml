@@ -11,6 +11,8 @@ jobs:
     permissions:
       contents: read          # Required to checkout and read repo files
       security-events: write  # Required to upload SARIF files to Security tab
+      attestations: write
+      id-token: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,13 +34,58 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: 'trivy-results.sarif'
-
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v7.0.0 # Ex: v4.1.0 or sha1, See the latest version at https://github.com/marketplace/actions/official-sonarqube-scan
-        env:
-          SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
-          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
-
+          
       - name: Build with Maven
         run: mvn -B package --file pom.xml
+
+      - name: SonarQube Analysis
+        run: mvn sonar:sonar \
+          -Dsonar.projectKey=DevOps1stPortfolio \
+          -Dsonar.projectName=DevOps1stPortfolio \
+          -Dsonar.host.url=${{ vars.SONAR_HOST_URL }} \
+          -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }}
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: my-docker-hub-namespace/my-docker-hub-repository
+
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-name: index.docker.io/my-docker-hub-namespace/my-docker-hub-repository
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+      - name: Update CD repo with new image tag
+        run: |
+          git clone https://${{ secrets.PAT_TOKEN }}@https://github.com/Kyul2022/DevOpsPortfolio1st-k8sInfra.git
+          cd dev
+          
+          git config user.email "ulrichkamdem048@gmail.com"
+          git config user.name "Kyul"
+          
+          sed -i "s|image: .*devops-portfolio:.*|image: ${{ secrets.DOCKER_USERNAME }}/devops-portfolio:${{ github.sha }}|g" backend.yaml
+          
+          git add backend.yaml
+          git commit -m "ci: update image tag to ${{ github.sha }}"
+          git push
+
+
 

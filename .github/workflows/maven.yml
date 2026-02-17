@@ -40,9 +40,6 @@ jobs:
 
       - name: SonarQube Analysis
         run: mvn sonar:sonar \
-          -Dsonar.projectKey=DevOps1stPortfolio \
-          -Dsonar.projectName=DevOps1stPortfolio \
-          -Dsonar.host.url=${{ vars.SONAR_HOST_URL }} \
           -Dsonar.token=${{ secrets.SONARQUBE_TOKEN }}
 
       - name: Log in to Docker Hub
